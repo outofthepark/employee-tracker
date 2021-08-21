@@ -1,23 +1,58 @@
-const express = require('express');
+const inquirer = require('inquirer');
+const Employee = require('./lib/Employee');
+const Role = require('./lib/Role');
+const Department = require('./lib/Department');
+//const mysql = require('mysql2');
+const cTable = require('console.table');
 
-const PORT = process.env.PORT || 3001;
-const app = express();
+// // Connect to databases
+// const db = mysql.createConnection(
+//     {
+//         host: 'localhost',
+//         user: 'root',
+//         password: 'cantor1234',
+//         database: 'company'
+//     },
+//     console.log('Connected to the company database.')
+// );
 
-// Express middleware
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
 
-app.get('/', (req, res) => {
-    res.json({
-      message: 'Hello World'
-    });
-  });
+// const employees = `SELECT * FROM employees`;
 
-// Default response for any other request (Not Found)
-app.use((req, res) => {
-  res.status(404).end();
-});
+// db.query(employees, (err, rows) => {
+//     if (err) {
+//         console.log(err.message);
+//     }else{
+//         console.table(rows);
+//     }
+// });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+
+
+
+
+async function runProgram() {
+
+    return inquirer
+        .prompt([
+        {
+            type: 'confirm',
+            name: 'confirmNewEmployee',
+            message: 'Would you like to enter another employee?',
+            default: false
+        },
+        {
+            type: 'list',
+            name: 'employeeType',
+            message: 'What type of employee do you want to add?',
+            choices: ['Engineer', 'Intern'],
+            when: ({ confirmNewEmployee }) => confirmNewEmployee
+        }]).then((response) =>{
+            const rows = await Department.getAll('departments');
+            console.log(rows);
+        });
+        
+}
+console.log('got here');
+
+runProgram();
